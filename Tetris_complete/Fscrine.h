@@ -15,11 +15,11 @@ private:
 	int next_blocks;
 	bool first;
 public:
-	next_block()
+	next_block(int y = 2, int x = 30)
 	{
 		first = true;
 		block *next_blocks = new tetrimino_0;
-		next_block_win = newwin(8, 10, 2, 30);
+		next_block_win = newwin(8, 10, y, x);
 		wbkgd(next_block_win, COLOR_PAIR(1));
 	}
 	void switch_first(){ first = false; };
@@ -38,9 +38,9 @@ private:
 	WINDOW *score_win;
 	int score;
 public:
-	score_scrine()
+	score_scrine(int y = 11, int x = 30)
 	{
-		score_win = newwin(4, 10, 11, 30);
+		score_win = newwin(4, 10, y, x);
 		wbkgd(score_win, COLOR_PAIR(1));
 		score = 0;
 
@@ -54,9 +54,9 @@ class user_name_scrine
 private:
 	WINDOW *user_win;
 public:
-	user_name_scrine()
+	user_name_scrine(int y = 17, int x = 30)
 	{
-		user_win = newwin(4, 10, 17, 30);
+		user_win = newwin(4, 10, y, x);
 	}
 	void const draw(char name[]) const;
 };
@@ -77,12 +77,14 @@ private:
 	int right;							//오른쪽 벽으로 부터의 거리
 	int top;							//위쪽으로부터의 거리
 	int color;							//색
+	int top_shadow;						//shadow를 만들기 위한 top값
+	bool shadow_on;						//shadow를 킬지 말지 정하는 변수
 public:
-	main_scrine() :score(0)
+	main_scrine(int y=2, int x=2) :score(0)
 	{
 		color = 1;
-
-		win = newwin(20, 22, 2, 2);
+		shadow_on = true;
+		win = newwin(20, 22, y, x);
 		for (int i = 0; i <= 17; i++)		//빈공간
 			for (int j = 1; j <= 10; j++)
 				fild[i][j] = 0;
@@ -103,7 +105,6 @@ public:
 	void gamming_scrine(std::ifstream& instream);			//게임화면 만듬
 	void start_game(std::ifstream& instream);				//테트리스 게임의 중심함수, 블록을 조작하고 없에는것이 대부분 들어있음
 	bool const reprint_scrine(block *blocks) const;			//게임화면을 새로고침함 즉 데이터상으로는 움직였지만 화면에 나오지 않은 것을 나오게함
-	bool const move_up(block *blocks);						//위로이동하는 함수, 현재 프로젝트에서는 사용하지 않음
 	bool const move_down(block *blocks);					//아래로 한칸 이동하는 함수
 	void move_side(block *blocks, int a);					//옆으로 움직이는 함수 a가 1이냐 -1이냐 에따라 왼쪽 오른쪽이 갈림
 	void in_it_fild();										//fild 초기화 fild값이 1인부분(현재 내려가고 있는 블록)을 찾아 0으로 바꿈
@@ -111,10 +112,8 @@ public:
 	void input_block_fild(block *blocks, int a);			//block값을 fild라는 2차원 배열에 저장
 	void delete_line(block *blocks);						//한줄을 지워도 되는 상환한지 판단 후 지워도 된다면 지움
 	bool is_it_finish() const;								//gameover 가 되었는지			조건2(블록이 맨 첫줄에 쌓여 있는지, 단 이번 프로젝트에서는 사용하지 않음)
-	void f(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime);	//settimer를 사용하기 위한 함수
-
-
-
+	void make_shadow(block *blocks);
+	void input_shadow_fild(block *blocks, int a);			//shadow를 집어넣음
 };
 
 

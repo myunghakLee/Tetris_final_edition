@@ -40,7 +40,7 @@ int main()
 
 
 	make_terminal();//터미널을 만듬(크기조정)
-	main_scrine game;
+	main_scrine game(2,2);
 
 
 	game.print_start_scrine(name);

@@ -59,14 +59,14 @@ void next_block::redraw()
 {
 	block * blocks = new tetrimino_0;
 
-	if (next_blocks == 0)		{ blocks = new tetrimino_L; }		//난수가 0이 나올 경우 tetrimino_L을 생성
-	else if (next_blocks == 1)	{ blocks = new tetrimino_J; }		//난수가 1이 나올 경우 tetrimino_J를 생성
-	else if (next_blocks == 2)	{ blocks = new tetrimino_0; }
-	else if (next_blocks == 3)	{ blocks = new tetrimino_S; }
-	else if (next_blocks == 4)	{ blocks = new tetrimino_Z; }
-	else if (next_blocks == 5)	{ blocks = new tetrimino_T; }
-	else if (next_blocks == 6)	{ blocks = new tetrimino_I; }
-	else if (next_blocks == 7)	{ blocks = new tetrimino_plus; }
+	if (next_blocks == 0) { blocks = new tetrimino_L; }		//난수가 0이 나올 경우 tetrimino_L을 생성
+	else if (next_blocks == 1) { blocks = new tetrimino_J; }		//난수가 1이 나올 경우 tetrimino_J를 생성
+	else if (next_blocks == 2) { blocks = new tetrimino_0; }
+	else if (next_blocks == 3) { blocks = new tetrimino_S; }
+	else if (next_blocks == 4) { blocks = new tetrimino_Z; }
+	else if (next_blocks == 5) { blocks = new tetrimino_T; }
+	else if (next_blocks == 6) { blocks = new tetrimino_I; }
+	else if (next_blocks == 7) { blocks = new tetrimino_plus; }
 
 
 	input_block(blocks);
@@ -99,7 +99,7 @@ int next_block::get_block()
 {
 	return next_blocks;
 }
-int next_block::get_color(){ return next_color; }
+int next_block::get_color() { return next_color; }
 
 void next_block::input_block(block *blocks)
 {
@@ -160,6 +160,8 @@ void main_scrine::start_game(std::ifstream& instream)
 	init_pair(7, COLOR_CYAN, COLOR_BLACK);
 	init_pair(8, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(9, COLOR_WHITE, COLOR_BLACK);
+	init_pair(10, COLOR_WHITE, COLOR_BLACK);
+
 
 
 
@@ -169,7 +171,7 @@ void main_scrine::start_game(std::ifstream& instream)
 	int random_block2;
 	random_block = rand() % 7;
 	if (next_block_scrine.get_first())		//게임 시작하고 처음 블럭이 나오는 경우
-	{		
+	{
 		random_block2 = random_block;		//randomblock2에 randomblock을 저장해둔다
 		random_block = rand() % 7;			//새로 random_block에 난수를 만든다
 	}
@@ -179,19 +181,18 @@ void main_scrine::start_game(std::ifstream& instream)
 	}
 	next_block_scrine.save_blocks_and_color(random_block);	//randomblock을 다음에 나오는 것에 표시
 	random_block = random_block2;	//randomblock에 randomblock2를 다시 저장
+	
 	color = random_block + 3;			//각 블럭마다 색을 다르게 해야 하므로
 
-	
-	if (random_block == 0)		{ blocks = new tetrimino_L; }		//난수가 0이 나올 경우 tetrimino_L을 생성
-	else if (random_block == 1)	{ blocks = new tetrimino_J; }		//난수가 1이 나올 경우 tetrimino_J를 생성
-	else if (random_block == 2)	{ blocks = new tetrimino_0; }
-	else if (random_block == 3)	{ blocks = new tetrimino_S; }
-	else if (random_block == 4)	{ blocks = new tetrimino_Z; }
-	else if (random_block == 5)	{ blocks = new tetrimino_T; }
-	else if (random_block == 6)	{ blocks = new tetrimino_I; }
-	else if (random_block == 7)	{ blocks = new tetrimino_plus; }
 
-
+	if (random_block == 0) { blocks = new tetrimino_L; }		//난수가 0이 나올 경우 tetrimino_L을 생성
+	else if (random_block == 1) { blocks = new tetrimino_J; }		//난수가 1이 나올 경우 tetrimino_J를 생성
+	else if (random_block == 2) { blocks = new tetrimino_0; }
+	else if (random_block == 3) { blocks = new tetrimino_S; }
+	else if (random_block == 4) { blocks = new tetrimino_Z; }
+	else if (random_block == 5) { blocks = new tetrimino_T; }
+	else if (random_block == 6) { blocks = new tetrimino_I; }
+	else if (random_block == 7) { blocks = new tetrimino_plus; }
 
 
 
@@ -208,42 +209,13 @@ void main_scrine::start_game(std::ifstream& instream)
 
 	right = 4;						//처음 블록은 오른쪽으로부터 4칸
 	top = 1;						//위로부터 1칸 떨어져서 생성
+	top_shadow = top;					//그림자도 같이 생성
 	input_block_fild(blocks, 1);
 
 	reprint_scrine(blocks);			//새로운 블록을 만듬
 	if (!is_it_ok())
 	{
-		while (!is_it_ok())
-		{
-			input_block_fild(blocks, -1);
-			top--;
-			input_block_fild(blocks, 1);
-			reprint_scrine(blocks);
-
-		}
 		reprint_scrine(blocks);
-
-		//INPUT ip;
-		//Sleep(1000);
-		//ip.ki.wVk = 0x41;
-		//SendInput(1, &ip, sizeof(INPUT));
-		//ip.ki.dwFlags = 0; // 0 for key press
-		//SendInput(1, &ip, sizeof(INPUT));
-		//INPUT ip;
-		//// Pause for 5 seconds.
-		//Sleep(5000);
-		//// Set up a generic keyboard event.
-		//ip.type = INPUT_KEYBOARD;
-		//ip.ki.wScan = 0; // hardware scan code for key
-		//ip.ki.time = 0;
-		//ip.ki.dwExtraInfo = 0;
-		//// Press the "A" key
-		//ip.ki.wVk = 0x41; // virtual-key code for the "a" key
-		//ip.ki.dwFlags = 0; // 0 for key press
-		//SendInput(1, &ip, sizeof(INPUT));
-		//// Release the "A" key
-		//ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-		//SendInput(1, &ip, sizeof(INPUT));
 
 		mvprintw(22, 8, "score : %d", score);
 		mvprintw(23, 8, "Press 'Q' Key to exit Tetris");
@@ -258,33 +230,42 @@ void main_scrine::start_game(std::ifstream& instream)
 		}
 	}
 
+	double present_time, present_sec;
+	double start_time = clock();
+	double start_sec = 0;
 
 	while (1)		//블록이 바닥에 닿을때 까지 사용자가 움직일수 있게함
 	{
 		char key;
 		instream >> key;
+		if (shadow_on) {make_shadow(blocks);}
+
 		if (key < 0 || instream.fail())		//input.txt에 저장되있지 않을 경우
 		{
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			double nt, nsec;
+			double nt, nsec;		//현재시각, 현재 초  현재시각은 좀 큰숫자로 표현됨
 			double ot = clock();    // 시작 시각 저장 
-			double osec = 0;
+			double osec = 0;		//처음엔 0초
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 			bool is_break = false;
 			do {
 				nt = clock();    // 현재 시각 저장 
 				nsec = difftime(nt, ot) / 1000;    // 경과 시간 
-				if (nsec > osec+delay_time) {    // 1초가 경과하면 
-					
+				present_time = clock();	//starttime과 짝을 이룰것임
+				present_sec = difftime(present_time, start_time) / 1000;	//경과시간
+
+				if (nsec > osec + delay_time || present_sec > start_sec + delay_time) {    // 일정시간이 경과하면 
+					start_sec = present_sec;    // 이전 메세지 표시 시각 재설정 
 					osec = nsec;    // 이전 메세지 표시 시각 재설정 
-					top++;
 					if (move_down(blocks))	//블록을 한칸 밑으로 내리는 것과 동시에 블록이 바닥에 닿았는지 판단
 					{
 						is_break = true;
 						break;
 					}
 				}
-			} while (!_kbhit());    // 키보드가 눌리지 않는 동안 
+ 			} while (!_kbhit());    // 키보드가 눌리지 않는 동안 
 			if (is_break)
 			{
 				break;
@@ -309,7 +290,6 @@ void main_scrine::start_game(std::ifstream& instream)
 		}
 		else if (key == 2 || key == 'g')		//down
 		{
-			top++;
 			if (move_down(blocks))	//블록을 한칸 밑으로 내리는 것과 동시에 블록이 바닥에 닿았는지 판단
 			{
 				break;
@@ -329,7 +309,6 @@ void main_scrine::start_game(std::ifstream& instream)
 		{
 			while (1)		//space키를 누른 경우 블록이 바닥에 닿을때 까지 계속하여 내림
 			{
-				top++;
 				if (move_down(blocks))
 				{
 					break;
@@ -350,6 +329,22 @@ void main_scrine::start_game(std::ifstream& instream)
 					exit(1);
 				}
 			}
+		}
+		else if (key == 's' || key == 'S')
+		{
+			if (is_it_ok()){
+				if (shadow_on) { shadow_on = false; }
+				else { shadow_on = true; }
+			
+			in_it_fild();
+			input_block_fild(blocks, 1);
+			reprint_scrine(blocks);
+			}
+		}
+		else if (key == 'p')
+		{
+			reprint_scrine(blocks);
+
 		}
 		//else if (key == 'a')	//맨 밑줄 지우기
 		//{
@@ -383,6 +378,18 @@ bool const main_scrine::reprint_scrine(block *blocks)const	//게임화면을 새로고침
 				mvwprintw(win, i, j * 2 - 1, "■");
 				wattroff(win, COLOR_PAIR(color));
 			}
+			else if (fild[i][j] == 123)//shadow를 만들것
+			{
+				wattron(win, COLOR_PAIR(10));
+				mvwprintw(win, i, j * 2 - 1, "□");
+				wattroff(win, COLOR_PAIR(10));
+			}
+			else if (fild[i][j] == 124)
+			{
+				wattron(win, COLOR_PAIR(color));
+				mvwprintw(win, i, j * 2 - 1, "■");
+				wattroff(win, COLOR_PAIR(color));
+			}
 			else if (fild[i][j] >= 100)
 			{
 				wattron(win, COLOR_PAIR(fild[i][j] / 100));
@@ -395,6 +402,7 @@ bool const main_scrine::reprint_scrine(block *blocks)const	//게임화면을 새로고침
 				mvwprintw(win, i, j * 2 - 1, "□");
 				wattroff(win, COLOR_PAIR(2));
 			}
+			
 	}
 
 	wrefresh(win);
@@ -406,7 +414,7 @@ void main_scrine::in_it_fild()		//fild 초기화
 {
 	for (int i = 1; i < 19; i++)
 		for (int j = 1; j < 11; j++)
-			if (fild[i][j] == 1)
+			if (fild[i][j] == 1 || fild[i][j] == 123 || fild[i][j] == 124)
 				fild[i][j] = 0;
 }
 
@@ -414,7 +422,7 @@ bool main_scrine::is_it_ok() const	//블록이 지정된 곳으로 움직일수 있나 없나를 �
 {
 	for (int i = 0; i < 21; i++)
 		for (int j = 0; j < 13; j++)
-			if (!(fild[i][j] == 0 || fild[i][j] == 1 || fild[i][j] == 10 || (fild[i][j] % 100 == 0)))//fild 가 0,1,10,100,200,300,400...900일 경우 즉 fild에 이상이 없을 경우
+			if (!(fild[i][j] == 0 || fild[i][j] == 1 || fild[i][j] == 10 || (fild[i][j] % 100 == 0) || fild[i][j] == 123 || fild[i][j] == 124))//fild 가 0,1,10,100,200,300,400...900일 경우 즉 fild에 이상이 없을 경우
 			{
 				return false;
 			}
@@ -433,12 +441,14 @@ void main_scrine::input_block_fild(block *blocks, int a)	//block을 필드에 표시,	
 
 			fild[i][j + 1] += blocks->get_block(i - top, j - right)*a;
 		}
+
 }
 
 bool const main_scrine::move_down(block *blocks)
 {
 	in_it_fild();
-
+	if (shadow_on) { input_shadow_fild(blocks, 1); }
+	top++;
 	if (top < 18)
 	{
 		input_block_fild(blocks, 1);	//블록의 현재 위치를 그림
@@ -447,11 +457,9 @@ bool const main_scrine::move_down(block *blocks)
 			input_block_fild(blocks, -1);//현재 블록을 지움, 현재는 블록이 겹쳐진 상태이기 때문
 			top--;
 			input_block_fild(blocks, 1);//블록을 한칸 내려서 다시 그림
-			top++;
-			for (int i = 1; i < 19; i++)
-			{
+			for (int i = 1; i < 19; i++){
 				for (int j = 1; j < 11; j++)
-					if (fild[i][j] == 1)
+					if (fild[i][j] == 1 || fild[i][j] == 123 || fild[i][j]==124)
 					{
 						fild[i][j] = 100 * color;	//fild의 값을 바꾸어줌 그 100의자리는 그 블록의 색을 의미함
 					}
@@ -469,10 +477,10 @@ bool const main_scrine::move_down(block *blocks)
 		for (int i = 1; i < 19; i++)
 		{
 			for (int j = 1; j < 11; j++)
-				if (fild[i][j] == 1)
+				if (fild[i][j] == 1 || fild[i][j] == 124 || fild[i][j] == 123)
 				{
 					fild[i][j] = 100 * color;
-				}
+				}///////////////////////////////////////////////////////////////////////////////////////
 		}
 		reprint_scrine(blocks);
 		return true;
@@ -533,3 +541,41 @@ bool main_scrine::is_it_finish() const		//게임이 끝날조건2(맨 첫줄에 블록이 쌓였
 	return false;
 }
 
+void main_scrine::make_shadow(block *blocks)
+{
+	top_shadow = top;
+
+	in_it_fild();
+	input_shadow_fild(blocks, 1);
+	input_block_fild(blocks, 1);
+	
+	while (1) {
+		if (is_it_ok() && top_shadow<18) {
+			input_shadow_fild(blocks, -1);
+			top_shadow++;
+			input_shadow_fild(blocks, 1);
+		}
+		else {
+			input_shadow_fild(blocks, -1);
+			top_shadow--;
+			input_shadow_fild(blocks, 1);
+			break;
+		}
+	}
+	reprint_scrine(blocks);
+
+}
+
+void main_scrine::input_shadow_fild(block *blocks, int a)
+{
+	for (int i = top_shadow; i < top_shadow + 4; i++)
+		for (int j = right; j < right + 4; j++)
+		{
+			if (i < 0)
+				i = 0;
+			if (j < -1)
+				j = -1;
+
+			fild[i][j + 1] += blocks->get_block(i - top_shadow, j - right) * 123 * a;
+		}
+}

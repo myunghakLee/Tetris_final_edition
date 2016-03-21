@@ -1,18 +1,20 @@
-﻿빌드 시작: 2016-03-20 오전 9:13:10
-     1>2 노드의 "C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Tetris_complete\Tetris_complete.vcxproj" 프로젝트(Build 대상)입니다.
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\pdcurses /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "Fscrine(ADT).cpp"
-         Fscrine(ADT).cpp
-     1>c:\program files (x86)\windows kits\8.1\include\um\wincon.h(118): warning C4005: 'MOUSE_MOVED' : 매크로 재정의
-                 c:\pdcurses\curses.h(157) : 'MOUSE_MOVED'의 이전 정의를 참조하십시오.
-     1>c:\users\myunghag\documents\visual studio 2013\projects\tetris_complete\tetris_complete\fscrine(adt).cpp(276): warning C4244: '인수' : 'double'에서 'time_t'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Debug\Tetris_complete.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\pdcurses pdcurses.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Debug\Tetris_complete.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Debug\Tetris_complete.lib" /MACHINE:X86 Debug\block.obj
-         "Debug\Fscrine(ADT).obj"
-         Debug\tetris.obj
-         Tetris_complete.vcxproj -> C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Debug\Tetris_complete.exe
-     1>"C:\Users\myunghag\documents\visual studio 2013\Projects\Tetris_complete\Tetris_complete\Tetris_complete.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
-
-빌드했습니다.
-
-경과 시간: 00:00:01.44
+﻿  Fscrine(ADT).cpp
+c:\program files (x86)\windows kits\8.1\include\um\wincon.h(118): warning C4005: 'MOUSE_MOVED': 매크로 재정의
+  c:\pdcurses\curses.h(157): note: 'MOUSE_MOVED'의 이전 정의를 참조하십시오.
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\fscrine.h(75): error C2059: 구문 오류: '상수'
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\fscrine(adt).cpp(255): warning C4244: '인수': 'double'에서 'const time_t'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\fscrine(adt).cpp(257): warning C4244: '인수': 'double'에서 'const time_t'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  block.cpp
+c:\program files (x86)\windows kits\8.1\include\um\wincon.h(118): warning C4005: 'MOUSE_MOVED': 매크로 재정의
+  c:\pdcurses\curses.h(157): note: 'MOUSE_MOVED'의 이전 정의를 참조하십시오.
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\fscrine.h(75): error C2059: 구문 오류: '상수'
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  tetris.cpp
+c:\program files (x86)\windows kits\8.1\include\um\wincon.h(118): warning C4005: 'MOUSE_MOVED': 매크로 재정의
+  c:\pdcurses\curses.h(157): note: 'MOUSE_MOVED'의 이전 정의를 참조하십시오.
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\fscrine.h(75): error C2059: 구문 오류: '상수'
+c:\users\명학\documents\visual studio 2015\projects\tetris_complete\tetris_complete\tetris.cpp(38): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
