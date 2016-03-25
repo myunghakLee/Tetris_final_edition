@@ -11,7 +11,7 @@ static char right_key[2] = {5, 'k'};
 static char space_key[2] = {32, 'a'};
 static char shadow_key[2] = { 's', 'w' };
 
-double delay_time = 1500;
+double delay_time = 1.5;
 
 void main_scrine::print_start_scrine(char name[], char name2[])
 {
