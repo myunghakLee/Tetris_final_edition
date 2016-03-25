@@ -15,21 +15,21 @@ private:
 	int next_blocks;
 	bool first;
 public:
-	next_block(int y = 2, int x = 30)
+	next_block(int x = 0)
 	{
 		first = true;
 		block *next_blocks = new tetrimino_0;
-		next_block_win = newwin(8, 10, y, x);
+		next_block_win = newwin(8, 10, 2, 30 + x);
 		wbkgd(next_block_win, COLOR_PAIR(1));
 	}
-	void switch_first(){ first = false; };
-	void draw() const;
+	void switch_first() { first = false; };
+	void draw(int player = 1);
 	void input_block(block *blocks);			//block값을 fild라는 2차원 배열에 저장
-	void redraw();
+	void redraw(int player = 1);
 	void save_blocks_and_color(int blocks);
 	int get_block();
 	int get_color();
-	bool get_first(){ return first; };
+	bool get_first() { return first; };
 };
 
 class score_scrine
@@ -37,16 +37,16 @@ class score_scrine
 private:
 	WINDOW *score_win;
 	int score;
+	int score2;
 public:
-	score_scrine(int y = 11, int x = 30)
+	score_scrine(const int x = 0)
 	{
-		score_win = newwin(4, 10, y, x);
+		score_win = newwin(4, 10, 11, 30 + x);
 		wbkgd(score_win, COLOR_PAIR(1));
 		score = 0;
-
 	}
 	void score_plus();
-	void draw() const;
+	void draw(int player = 1);
 };
 
 class user_name_scrine
@@ -54,11 +54,11 @@ class user_name_scrine
 private:
 	WINDOW *user_win;
 public:
-	user_name_scrine(int y = 17, int x = 30)
+	user_name_scrine(int x = 0)
 	{
-		user_win = newwin(4, 10, y, x);
+		user_win = newwin(4, 10, 17, 30 + x);
 	}
-	void const draw(char name[]) const;
+	void const draw(char name[], int player = 1);
 };
 
 
@@ -67,53 +67,77 @@ public:
 class main_scrine
 {
 private:
-	int fild[21][13];		//테트리스 칸
-	WINDOW * win;
-	int score;				//점수
-	int x, y;
-	score_scrine scrine_score;			//스코어가 나올 화면
-	user_name_scrine name_scrine;		//user의 이름이 나올 화면
-	next_block next_block_scrine;
-	int right;							//오른쪽 벽으로 부터의 거리
-	int top;							//위쪽으로부터의 거리
-	int color;							//색
-	int top_shadow;						//shadow를 만들기 위한 top값
-	bool shadow_on;						//shadow를 킬지 말지 정하는 변수
+	int fild[2][21][13];		//테트리스 칸
+	WINDOW * win[2];
+	int score[2];				//점수
+	score_scrine *scrine_score[2];			//스코어가 나올 화면
+	user_name_scrine *name_scrine[2];		//user의 이름이 나올 화면
+	next_block *next_block_scrine[2];
+	int right[2];							//오른쪽 벽으로 부터의 거리
+	int top[2];							//위쪽으로부터의 거리
+	int color[2];							//색
+	int top_shadow[2];						//shadow를 만들기 위한 top값
+	bool shadow_on[2];						//shadow를 킬지 말지 정하는 변수
+	bool player_complete_down[2];//각 플레이어마다 언제 바닥에 블럭을 완전히 내렸는지
+	block *blocks[2];
+
+
+
+
 public:
-	main_scrine(int y=2, int x=2) :score(0)
-	{
-		color = 1;
-		shadow_on = true;
-		win = newwin(20, 22, y, x);
-		for (int i = 0; i <= 17; i++)		//빈공간
-			for (int j = 1; j <= 10; j++)
-				fild[i][j] = 0;
-		for (int i = 0; i <= 18; i++)		//벽
-		{
-			fild[i][0] = 10;
-			fild[i][11] = 10;
-			fild[i][12] = 10;
-		}
-		for (int i = 0; i <= 11; i++)		//벽
-		{
-			fild[20][i] = 10;
-			fild[19][i] = 10;
+	main_scrine(){
+		scrine_score[0] = new score_scrine;
+		name_scrine[0] = new user_name_scrine;
+		next_block_scrine[0] = new next_block;
+		scrine_score[1] = new score_scrine(50);
+		name_scrine[1] = new user_name_scrine(50);
+		next_block_scrine[1] = new next_block(50);
+
+
+		score[0] = 0;
+		score[1] = 0;
+		player_complete_down[0] = true;
+		player_complete_down[1] = true;
+		color[0] = 1;
+		color[1] = 1;
+		shadow_on[0] = true;
+		shadow_on[1] = true;
+		win[0] = newwin(20, 22, 2, 2);
+		win[1] = newwin(20, 22, 2, 52);
+
+		for (int pp = 0; pp < 2; pp++) {
+			for (int i = 0; i <= 18; i++)		//빈공간
+				for (int j = 1; j <= 10; j++) {
+					fild[pp][i][j] = 0;
+				}
+			for (int i = 0; i <= 18; i++)		//벽
+			{
+				fild[pp][i][0] = 10;
+				fild[pp][i][11] = 10;
+				fild[pp][i][12] = 10;
+			}
+			for (int i = 0; i <= 12; i++)		//벽
+			{
+				fild[pp][20][i] = 10;
+				fild[pp][19][i] = 10;
+			}
 		}
 	}
-	void print_start_scrine(char name[]) const;				//바깥 테두리 score_scrine, name_scrine을 만듬	
-	void outside_border() const;							//바깥 테두리를 만듬
-	void gamming_scrine(std::ifstream& instream);			//게임화면 만듬
+	void print_start_scrine(char name[], char name2[]);				//바깥 테두리 score_scrine, name_scrine을 만듬	, player2 가 50일시 2번스크린 개방
+	void outside_border();							//바깥 테두리를 만듬
+	void gamming(std::ifstream& instream);			//게임 반복
 	void start_game(std::ifstream& instream);				//테트리스 게임의 중심함수, 블록을 조작하고 없에는것이 대부분 들어있음
-	bool const reprint_scrine(block *blocks) const;			//게임화면을 새로고침함 즉 데이터상으로는 움직였지만 화면에 나오지 않은 것을 나오게함
-	bool const move_down(block *blocks);					//아래로 한칸 이동하는 함수
-	void move_side(block *blocks, int a);					//옆으로 움직이는 함수 a가 1이냐 -1이냐 에따라 왼쪽 오른쪽이 갈림
-	void in_it_fild();										//fild 초기화 fild값이 1인부분(현재 내려가고 있는 블록)을 찾아 0으로 바꿈
+	bool const reprint_scrine() const;			//게임화면을 새로고침함 즉 데이터상으로는 움직였지만 화면에 나오지 않은 것을 나오게함
+	bool const move_down(block *blocks, int p);					//아래로 한칸 이동하는 함수
+	void move_side(block *blocks, int a, int p);					//옆으로 움직이는 함수 a가 1이냐 -1이냐 에따라 왼쪽 오른쪽이 갈림
+	void in_it_fild(int p);										//fild 초기화 fild값이 1인부분(현재 내려가고 있는 블록)을 찾아 0으로 바꿈
 	bool is_it_ok() const;									//블록이 그쪽으로 움직일수 있나 판단
-	void input_block_fild(block *blocks, int a);			//block값을 fild라는 2차원 배열에 저장
-	void delete_line(block *blocks);						//한줄을 지워도 되는 상환한지 판단 후 지워도 된다면 지움
-	bool is_it_finish() const;								//gameover 가 되었는지			조건2(블록이 맨 첫줄에 쌓여 있는지, 단 이번 프로젝트에서는 사용하지 않음)
-	void make_shadow(block *blocks);
-	void input_shadow_fild(block *blocks, int a);			//shadow를 집어넣음
+	void input_block_fild(block *blocks, int a, int p);			//block값을 fild라는 2차원 배열에 저장
+	void delete_line(block *blocks, int p);						//한줄을 지워도 되는 상환한지 판단 후 지워도 된다면 지움
+	bool is_it_finish(int p) const;								//gameover 가 되었는지			조건2(블록이 맨 첫줄에 쌓여 있는지, 단 이번 프로젝트에서는 사용하지 않음)
+	void make_shadow(block *blocks, int p);
+	void input_shadow_fild(block *blocks, int a, int p);			//shadow를 집어넣음
+	void draw();												//게임화면 그림
 };
 
 
