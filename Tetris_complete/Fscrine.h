@@ -80,12 +80,13 @@ private:
 	bool shadow_on[2];						//shadow를 킬지 말지 정하는 변수
 	bool player_complete_down[2];//각 플레이어마다 언제 바닥에 블럭을 완전히 내렸는지
 	block *blocks[2];
-
-
+	int choose;								//1p인지 2p인지 선택하기 위한 변수
+	bool AI_on;
 
 
 public:
 	main_scrine(){
+		AI_on = false;
 		scrine_score[0] = new score_scrine;
 		name_scrine[0] = new user_name_scrine;
 		next_block_scrine[0] = new next_block;
@@ -125,7 +126,6 @@ public:
 	}
 	void print_start_scrine(char name[], char name2[]);				//바깥 테두리 score_scrine, name_scrine을 만듬	, player2 가 50일시 2번스크린 개방
 	void outside_border();							//바깥 테두리를 만듬
-	void gamming(std::ifstream& instream);			//게임 반복
 	void start_game(std::ifstream& instream);				//테트리스 게임의 중심함수, 블록을 조작하고 없에는것이 대부분 들어있음
 	bool const reprint_scrine() const;			//게임화면을 새로고침함 즉 데이터상으로는 움직였지만 화면에 나오지 않은 것을 나오게함
 	bool const move_down(block *blocks, int p);					//아래로 한칸 이동하는 함수
@@ -138,6 +138,15 @@ public:
 	void make_shadow(block *blocks, int p);
 	void input_shadow_fild(block *blocks, int a, int p);			//shadow를 집어넣음
 	void draw();												//게임화면 그림
+	void set_choose(int a) { choose = a; }										//choose를 변경하기 위한 함수
+	int get_choose() { return choose; }							//choose에 접근하기 위한 함수
+	void finish_scrine(block *blocks, int p);
+	void AI_move(block *blocks, int p = 1 );												//AI의 움직임을 위한 함수
+	int calc(int p = 1);												//AI가 어떻게 움직여야 하는지 계산하기 위한것을 정리, 관리하는 함수
+	int calc_height(int p = 1);											//높이 계산
+	int calc_surface(int p = 1);										//표면 계산
+	int can_remove(int p = 1);											//지울 수 있나	
+	void AI_ON() { AI_on = true; }
 };
 
 

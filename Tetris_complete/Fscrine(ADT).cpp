@@ -4,11 +4,14 @@
 #include<fstream>
 #include<time.h>
 
-static char up_key[2] = {3, 'u'};
-static char down_key[2] = {2, 'j'};
-static char left_key[2] = {4, 'h'};
-static char right_key[2] = {5, 'k'};
-static char space_key[2] = {32, 'a'};
+
+int calc_num[4][10];						//[몇번 뒤집혔나][왼쪽 혹은 오른쪽으로 몇회 움직였나, 5가 가운데 0이 왼쪽으로 5번]
+
+static char up_key[2] = { 3, 'u' };
+static char down_key[2] = { 2, 'j' };
+static char left_key[2] = { 4, 'h' };
+static char right_key[2] = { 5, 'k' };
+static char space_key[2] = { 32, 'a' };
 static char shadow_key[2] = { 's', 'w' };
 
 double delay_time = 1.5;
@@ -164,26 +167,10 @@ void main_scrine::draw()
 	}
 }
 
-void main_scrine::gamming(std::ifstream& instream)
-{
-	while (1)
-	{
-		start_game(instream);	//그렇지 않을 경우 게임을 계속 진행
-	}
-}
-
 void main_scrine::start_game(std::ifstream& instream)
 {
-
-	init_pair(3, COLOR_BLUE, COLOR_BLACK);
-	init_pair(4, COLOR_GREEN, COLOR_BLACK);
-	init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(6, COLOR_RED, COLOR_BLACK);
-	init_pair(7, COLOR_CYAN, COLOR_BLACK);
-	init_pair(8, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(9, COLOR_WHITE, COLOR_BLACK);
-	init_pair(10, COLOR_WHITE, COLOR_BLACK);
-
+	//원래 여기에 initpair 있었음
+	int height;
 	bool is_break3 = false;
 
 
@@ -215,14 +202,10 @@ void main_scrine::start_game(std::ifstream& instream)
 			}
 		}
 
-
-
-
-
 		if (player_complete_down[p]) {
 			next_block_scrine[p]->save_blocks_and_color(random_block[p]);	//randomblock을 다음에 나오는 것에 표시
 			random_block[p] = random_block2[p];	//randomblock에 randomblock2를 다시 저장
-			color[p] = random_block[p]+3;
+			color[p] = random_block[p] + 3;
 
 			player_complete_down[p] = false;
 			if (random_block[p] == 0) { blocks[p] = new tetrimino_L; }		//난수가 0이 나올 경우 tetrimino_L을 생성
@@ -238,35 +221,15 @@ void main_scrine::start_game(std::ifstream& instream)
 			right[p] = 4;						//처음 블록은 오른쪽으로부터 4칸
 			top[p] = 1;						//위로부터 1칸 떨어져서 생성
 			top_shadow[p] = top[p];					//그림자도 같이 생성
-			input_block_fild(blocks[p], 1,p);
+			input_block_fild(blocks[p], 1, p);
 
 			reprint_scrine();			//새로운 블록을 만듬
-			
-			if (!is_it_ok())
-			{
-				reprint_scrine();
 
-				mvprintw(22, 8, "score : %d", score[p]);
-				mvprintw(23, 8, "Press 'Q' Key to exit Tetris");
-				while (1)
-				{
-					char key = getch();
-					if (key == 'q' || key == 'Q')
-					{
-						system("cls");
-						exit(1);
-					}
-				}
+			if (!is_it_ok()) {
+				finish_scrine(blocks[p], p);
 			}
-
-
 		}
-
-
 	}
-
-
-	
 
 	double present_time, present_sec;
 	double start_time = clock();
@@ -276,14 +239,14 @@ void main_scrine::start_game(std::ifstream& instream)
 	{
 		char key;
 		instream >> key;
-		if (shadow_on[0]) { make_shadow(blocks[0],0); }
-		if (shadow_on[1]) { make_shadow(blocks[1],1); }
+		if (shadow_on[0]) { make_shadow(blocks[0], 0); }
+		if (shadow_on[1]) { make_shadow(blocks[1], 1); }
 
 		if (key < 0 || instream.fail())		//input.txt에 저장되있지 않을 경우
 		{
-			double nt, nsec;		//현재시각, 현재 초  현재시각은 좀 큰숫자로 표현됨
-			double ot = clock();    // 시작 시각 저장 
-			double osec = 0;		//처음엔 0초
+			//double nt, nsec;		//현재시각, 현재 초  현재시각은 좀 큰숫자로 표현됨
+			//double ot = clock();    // 시작 시각 저장 
+			//double osec = 0;		//처음엔 0초
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -291,15 +254,16 @@ void main_scrine::start_game(std::ifstream& instream)
 			bool is_break2 = false;
 
 			do {
-				nt = clock();    // 현재 시각 저장 
-				nsec = difftime(nt, ot) / 1000;    // 경과 시간 
+				//nt = clock();    // 현재 시각 저장 
+				//nsec = difftime(nt, ot) / 1000;    // 경과 시간 
 				present_time = clock();	//starttime과 짝을 이룰것임
 				present_sec = difftime(present_time, start_time) / 1000;	//경과시간
 
-				if (nsec > osec + delay_time || present_sec > start_sec + delay_time) {    // 일정시간이 경과하면 
+				if (/*nsec > osec + delay_time ||*/ present_sec > start_sec + delay_time) {    // 일정시간이 경과하면 
+
 					start_sec = present_sec;    // 이전 메세지 표시 시각 재설정 
-					osec = nsec;    // 이전 메세지 표시 시각 재설정 
-					
+					//osec = nsec;    // 이전 메세지 표시 시각 재설정 
+
 					for (int p = 0; p < 2; p++) {
 						if (move_down(blocks[p], p))	//블록을 한칸 밑으로 내리는 것과 동시에 블록이 바닥에 닿았는지 판단
 						{
@@ -308,19 +272,25 @@ void main_scrine::start_game(std::ifstream& instream)
 							is_break2 = true;
 						}
 					}
+					if (AI_on) {
+						AI_move(blocks[1], 1);
+						is_break = true;
+						is_break2 = true;
+						player_complete_down[1] = true;
+						is_it_finish(1);
+					}
 					if (is_break2) {
 						break;
 					}
 
 				}
 			} while (!_kbhit());    // 키보드가 눌리지 않는 동안 
-			if (is_break){
+			if (is_break) {
 				break;
 			}//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			key = getch();
 
 		}
-
 
 		for (int p = 0; p < 2; p++) {
 			if (key == up_key[p])			//up
@@ -382,52 +352,61 @@ void main_scrine::start_game(std::ifstream& instream)
 			}
 			else if (key == 113 || key == 'q')	//q			q를 누르면 게임이 끝나도록함
 			{
-				mvprintw(22, 8, "score : %d", score);
-				mvprintw(23, 8, "Press 'Q' Key to exit Tetris");
-				while (1)
-				{
-					char key = getch();
-					if (key == 'q' || key == 'Q')
-					{
-						system("cls");
-						exit(1);
-					}
-				}
+				finish_scrine(blocks[p], p);
 			}
 			else if (key == 'p') {						//일시정지
 				while (1) {
-					mvprintw(23, 8, "Press 'P' if want resume");
+					mvprintw(23, 8, "Press 'P' if you want resume");
 					char pause = getch();
 					if (pause == 'p') {
-						mvprintw(23, 8, "                              ");
+						mvprintw(23, 8, "                              ");//위에 press p if you .... 이 문구 지우기
 						refresh();
+						key = NULL;
 						break;
 					}
 				}
 				reprint_scrine();
 			}
-		}
-		
-		//else if (key == 'a')	//맨 밑줄 지우기
-		//{
+			else if (key == 'x')	//맨 밑줄 지우기
+			{
+				scrine_score[0]->score_plus();	//score을 1 올림
+				score[0]++;					//나중에 게임이 끝난후 점수를 띄워주기 위한것
+				if (delay_time > 0.1)
+				{
+					delay_time -= 0.01;
+				}
+				for (int k = 18; k > 1; k--)
+					for (int j = 1; j < 11; j++)
+					{
+						fild[0][k][j] = fild[0][k - 1][j];
+					}
+				reprint_scrine();
+			}
+			else if (key == 'z')	//현재 블록 모양 바꾸기
+			{
+				input_block_fild(blocks[0], -1, 0);
 
-		//	for (int k = 18; k > 1; k--)
-		//		for (int j = 1; j < 11; j++)
-		//		{
-		//			fild[k][j] = fild[k - 1][j];
-		//		}
-		//	reprint_scrine(blocks);
-		//}
-		//else if (key == 'z')	//현재 블록 모양 바꾸기
-		//{
-		//	input_block_fild(blocks, -1);
-		//	break;
-		//}
+				in_it_fild(0);
+				is_break3 = true;
+				player_complete_down[0] = true;
+				break;
+			}
+			else if (key == 'n') {
+				AI_move(blocks[0], 0);
+				is_break3 = true;
+
+				break;
+			}
+
+		}
+
 
 		if (is_break3) {
 			break;
 		}
 	}
+
+
 	for (int p = 0; p < 2; p++) {
 		if (player_complete_down[p]) {
 			delete_line(blocks[p], p);
@@ -484,15 +463,15 @@ bool const main_scrine::reprint_scrine()const	//게임화면을 새로고침(?)함
 
 void main_scrine::in_it_fild(int p)		//fild 초기화
 {
-		for (int i = 1; i < 19; i++)
-			for (int j = 1; j < 11; j++)
-				if (fild[p][i][j] == 1 || fild[p][i][j] == 123 || fild[p][i][j] == 124)
-					fild[p][i][j] = 0;
+	for (int i = 1; i < 19; i++)
+		for (int j = 1; j < 11; j++)
+			if (fild[p][i][j] == 1 || fild[p][i][j] == 123 || fild[p][i][j] == 124)
+				fild[p][i][j] = 0;
 }
 
 bool main_scrine::is_it_ok() const	//블록이 지정된 곳으로 움직일수 있나 없나를 판단
 {
-	for (int p = 0; p < 2; p++)
+	for (int p = 0; p < choose; p++)
 		for (int i = 0; i < 21; i++)
 			for (int j = 0; j < 13; j++)
 				if (!(fild[p][i][j] == 0 || fild[p][i][j] == 1 || fild[p][i][j] == 10 || (fild[p][i][j] % 100 == 0) || fild[p][i][j] == 123 || fild[p][i][j] == 124)) {//fild 가 0,1,10,100,200,300,400...900일 경우 즉 fild에 이상이 없을 경우
@@ -503,16 +482,16 @@ bool main_scrine::is_it_ok() const	//블록이 지정된 곳으로 움직일수 있나 없나를 �
 
 void main_scrine::input_block_fild(block *blocks, int a, int p)	//block을 필드에 표시,	a가 1일경우 블록을 표시 -1일 경우 블록을 지움
 {
-		for (int i = top[p]; i < top[p] + 4; i++)
-			for (int j = right[p]; j < right[p] + 4; j++)
-			{
-				if (i < 0)
-					i = 0;
-				if (j < -1)
-					j = -1;
+	for (int i = top[p]; i < top[p] + 4; i++)
+		for (int j = right[p]; j < right[p] + 4; j++)
+		{
+			if (i < 0)
+				i = 0;
+			if (j < -1)
+				j = -1;
 
-				fild[p][i][j + 1] += blocks->get_block(i - top[p], j - right[p])*a;
-			}
+			fild[p][i][j + 1] += blocks->get_block(i - top[p], j - right[p])*a;
+		}
 
 }
 
@@ -526,9 +505,9 @@ bool const main_scrine::move_down(block *blocks, int p)
 		input_block_fild(blocks, 1, p);	//블록의 현재 위치를 그림
 		if (!is_it_ok())	//블록이 다 내려갔을 경우
 		{
-			input_block_fild(blocks, -1,p);//현재 블록을 지움, 현재는 블록이 겹쳐진 상태이기 때문
+			input_block_fild(blocks, -1, p);//현재 블록을 지움, 현재는 블록이 겹쳐진 상태이기 때문
 			top[p]--;
-			input_block_fild(blocks, 1,p);//블록을 한칸 내려서 다시 그림
+			input_block_fild(blocks, 1, p);//블록을 한칸 올려서 다시 그림
 			for (int i = 1; i < 19; i++) {
 				for (int j = 1; j < 11; j++)
 					if (fild[p][i][j] == 1 || fild[p][i][j] == 123 || fild[p][i][j] == 124)
@@ -544,7 +523,7 @@ bool const main_scrine::move_down(block *blocks, int p)
 	else//블록이 맨 밑까지 내려간 경우
 	{
 		top[p]--;
-		input_block_fild(blocks, 1,p);
+		input_block_fild(blocks, 1, p);
 		top[p]++;
 		for (int i = 1; i < 19; i++)
 		{
@@ -564,12 +543,12 @@ void main_scrine::move_side(block *blocks, int a, int p)
 {
 	in_it_fild(p);
 
-	input_block_fild(blocks, 1,p);
+	input_block_fild(blocks, 1, p);
 	if (!is_it_ok())				//움직이는 것이 가능한지
 	{
-		input_block_fild(blocks, -1,p);		//현재 블록을 지움
+		input_block_fild(blocks, -1, p);		//현재 블록을 지움
 		right[p] += a;							//오른쪽으로 한칸 이동
-		input_block_fild(blocks, 1,p);		//블록을 다시 그림
+		input_block_fild(blocks, 1, p);		//블록을 다시 그림
 	}
 	reprint_scrine();
 }
@@ -620,16 +599,16 @@ void main_scrine::make_shadow(block *blocks, int p)
 
 	in_it_fild(p);
 	input_shadow_fild(blocks, 1, p);
-	input_block_fild(blocks, 1,p);
+	input_block_fild(blocks, 1, p);
 
 	while (1) {
 		if (is_it_ok() && top_shadow[p] < 18) {
 			input_shadow_fild(blocks, -1, p);
 			top_shadow[p]++;
-			input_shadow_fild(blocks, 1,p);
+			input_shadow_fild(blocks, 1, p);
 		}
 		else {
-			input_shadow_fild(blocks, -1,p);
+			input_shadow_fild(blocks, -1, p);
 			top_shadow[p]--;
 			input_shadow_fild(blocks, 1, p);
 			break;
@@ -653,3 +632,244 @@ void main_scrine::input_shadow_fild(block *blocks, int a, int p)
 		}
 }
 
+void main_scrine::finish_scrine(block *blocks, int p)
+{
+	while (!is_it_ok()) {				//마지막에 끝날때 블럭이 이상하게 겹치는 것을 방지
+		input_block_fild(blocks, -1, p);//현재 블록을 지움, 현재는 블록이 겹쳐진 상태이기 때문
+		top[p]--;
+		input_block_fild(blocks, 1, p);//블록을 한칸 올려서 다시 그림
+	}
+	reprint_scrine();
+
+
+	mvprintw(22, 2, " Player1's score : %d", score[0]);
+	mvprintw(22, 53, "Player2's score : %d", score[1]);
+	mvprintw(23, 3 + (choose - 1) * 20, "Press 'Q' Key to exit Tetris");	//2인용일때와 1인용일때 다르게 결과가 뜨게 하기 위해서
+	while (1)
+	{
+		char key = getch();
+		if (key == 'q' || key == 'Q')
+		{
+			system("cls");
+			exit(1);
+		}
+	}
+}
+
+
+
+
+void main_scrine::AI_move(block *blocks, int p)
+{
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 10; j++)
+			calc_num[i][j] = 0;						//[몇번 뒤집혔나][왼쪽 혹은 오른쪽으로 몇회 움직였나, 5가 가운데 0이 왼쪽으로 5번]
+
+	int cancel[4] = { 0,0,0,0 };	//각 모양마다 모양을 바꾸기 위해 움직인 것을 나중에 재해두어야 해서
+
+
+
+	for (int sh = 0; sh < 4; sh++) {			//sh = shape
+
+		for (int i = 0; i < 11; i++) {				//일단 오른쪽 끝으로 옮김
+			right[p]++;
+			move_side(blocks, -1, p);
+		}
+
+		make_shadow(blocks, p);
+
+		calc_num[sh][0] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
+
+		for (int i = 1; i < 10; i++) {
+			//////////////////////////////왼쪽이동/////////////////////////////////
+			right[p]--;
+			move_side(blocks, 1, p);		//블록을 옆으로 옮김
+			make_shadow(blocks, p);		//계산을 위해 shadow를 만듬
+			////////////////////////////////////////////////////////////////////////
+			calc_num[sh][i] = calc(p);
+		}
+		/////////////////////////////////////모양바꿈////////////////////////////////////////////////////
+
+		for (int C_sha = 0; C_sha < 4; C_sha++) {		//cha는 모양 바꿀 때 막혀서 안 바뀔 경우 4번까지 이동 허용하겠다는거
+			blocks->change_block(1);
+			in_it_fild(p);
+			input_block_fild(blocks, 1, p);
+			if (is_it_ok()) {
+				reprint_scrine();
+				break;
+			}
+			else
+			{
+				input_block_fild(blocks, -1, p);
+				blocks->change_block(-1);
+				in_it_fild(p);
+				input_block_fild(blocks, 1, p);
+
+				right[p]++;
+				move_side(blocks, -1, p);
+				make_shadow(blocks, p);
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+
+
+
+
+	int optimum_num = 1000000;			//최적화 되었을때의 값, 높이 표면적의 넓이 지울수 있느냐 없느냐
+	int optimum_shape = 0;
+	int optimum_move = 0;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 10; j++) {
+			if (optimum_num > calc_num[i][j]) {
+				optimum_num = calc_num[i][j];
+				optimum_shape = i;
+				optimum_move = j;
+			}
+		}
+	}
+	mvprintw(23, 8, "%d %d %d", optimum_num, optimum_shape, optimum_move);
+	refresh();
+
+	for (int i = 0; i < optimum_shape; i++) {		//저장된 모양으로 바꿈
+		blocks->change_block(1);
+		in_it_fild(p);
+		input_block_fild(blocks, 1, p);
+		if (!is_it_ok())
+		{
+			input_block_fild(blocks, -1, p);
+			blocks->change_block(-1);
+			in_it_fild(p);
+			input_block_fild(blocks, 1, p);
+			i--;
+			//cancel++;
+			right[p]--;
+			move_side(blocks, 1, p);
+			make_shadow(blocks, p);
+
+		}
+		reprint_scrine();
+
+	}
+	//for (int i = 0; i < cancel; i++) {
+	//	right[p]++;
+	//	move_side(blocks, -1, p);
+	//	make_shadow(blocks, p);
+	//}
+
+	for (int i = 0; i < 11; i++) {				//일단 오른쪽 끝으로 옮김
+		right[p]++;
+		move_side(blocks, -1, p);
+	}
+
+	for (int i = 0; i < optimum_move; i++) {			//저장된 값만큼 움직임
+		right[p]--;
+		move_side(blocks, 1, p);
+	}
+
+	make_shadow(blocks, p);
+	while (1)		//맨 밑으로 내림
+	{
+		if (move_down(blocks, p))
+		{
+			player_complete_down[p] = true;
+			break;
+		}
+	}
+	in_it_fild(p);
+
+}
+
+
+int main_scrine::calc(int p)
+{
+	int num = 0;
+	int height = calc_height(p);
+	int H = height;					//높이 점수 계산을 위한 변수, 실제 높이와는 따로 잡아야함;
+	int remove_line_num = can_remove(p);		//몇줄 지울 수 있는지
+
+	for (int i = 8; i < 18; i++) {
+		if (height > i) { H++; }
+		if (height > 12) {
+			H += 2;
+			if (remove_line_num > 0) { remove_line_num++; }
+		}
+		if (height > 14) { H += 3; remove_line_num *= 2; }
+	}
+	if (height > 17) {
+		H = 10000; remove_line_num *= 10000000;
+	}
+
+
+	height = H;
+	num = calc_surface(p) + H * 2 - remove_line_num * 15;	//num이 낮으면 낮을수록 좋음
+	if (num < -50) {
+		num += 30;
+		num -= 30;
+	}
+	return num;
+}
+int main_scrine::calc_height(int p)
+{
+	int height = 19;
+	for (int i = 0; i <= 18; i++) {
+		for (int j = 1; j <= 10; j++) {
+			if (fild[p][i][j] != 0 && fild[p][i][j] != 1) {
+				return height;
+			}
+		}
+		height--;
+	}
+	return height;
+
+}
+int main_scrine::calc_surface(int p)
+{
+	float surface = 0;
+
+	for (int i = 1; i <= 18; i++) {
+		for (int j = 1; j <= 10; j++) {
+			if (fild[p][i][j] == 0) {
+				if (fild[p][i - 1][j] != 0 && fild[p][i - 1][j] != 1 && fild[p][i - 1][j] != 10) { surface++; }
+				if (fild[p][i + 1][j] != 0 && fild[p][i + 1][j] != 1 && fild[p][i + 1][j] != 10) { surface++; }
+				if (fild[p][i][j + 1] != 0 && fild[p][i][j + 1] != 1 && fild[p][i][j + 1] != 10) { surface++; }
+				if (fild[p][i][j - 1] != 0 && fild[p][i][j - 1] != 1 && fild[p][i][j - 1] != 10) { surface++; }
+				if (fild[p][i][j - 1] != 0 && fild[p][i][j + 1] != 0 && fild[p][i - 1][j] != 0 && fild[p][i + 1][j] != 0) { surface += 4; }
+				if (fild[p][i - 1][j] != 0 && fild[p][i + 1][j] != 0) { surface += 2; }
+				if (i > 1) {
+					if (fild[p][i - 2][j] != 0) { surface += 2; }
+				}
+
+			}
+			else if (fild[p][i][j] % 100 == 0 || fild[p][i][j] == 123 || fild[p][i][j] == 124) {					//벽과 닿아있는 경우
+				if (fild[p][i][j - 1] == 10 || fild[p][i][j + 1] == 10) { surface++; }
+			}
+		}
+	}
+
+	for (int i = 1; i <= 10; i++) {
+		if (fild[p][18][i] == 0) { surface++; }
+	}
+	return surface;
+}
+int main_scrine::can_remove(int p)
+{
+	int del_line_num = 0;
+
+	int del = 0;
+	for (int i = 1; i < 19; i++)
+	{
+		for (int j = 1; j < 11; j++)
+		{
+			if (100 <= fild[p][i][j] && fild[p][i][j] <= 900)
+				del++;
+		}
+		if (del == 10)		//한줄이 꽉찬경우
+		{
+			del_line_num++;
+		}
+		del = 0;
+	}
+
+	return del_line_num;
+}
