@@ -14,7 +14,7 @@ static char right_key[2] = { 5, 'k' };
 static char space_key[2] = { 32, 'a' };
 static char shadow_key[2] = { 's', 'w' };
 
-double delay_time = 1.5;
+double delay_time = 1213231231.5;
 
 void main_scrine::print_start_scrine(char name[], char name2[])
 {
@@ -789,9 +789,9 @@ int main_scrine::calc(int p)
 
 	for (int i = 10; i < 18; i++) {
 		if (height > i) { H++; }
-		if (height > 14) {
-			H += 2;
-			shadow_height += 2;
+		if (height > 10) {
+			H += 1;
+			shadow_height += 1;
 			if (remove_line_num > 0) { remove_line_num++; }
 		}
 		if (height > 14) { H += 3; remove_line_num *= 2; shadow_height += 3; }
@@ -802,10 +802,12 @@ int main_scrine::calc(int p)
 
 
 	height = H;
-	num = calc_surface(p) + H * 2 - remove_line_num * 15 + shadow_height - nearly_remove(p)*7 + calc_blank(p)*3;	//num이 낮으면 낮을수록 좋음
+	num = calc_surface(p) + H * 2 - remove_line_num * 7 + shadow_height - nearly_remove(p)*3 + calc_blank(p)*2;	//num이 낮으면 낮을수록 좋음
 
 	return num;
 }
+
+
 
 int main_scrine::calc_height(int p)
 {
@@ -943,9 +945,12 @@ int main_scrine::calc_blank(int p) {
 			}
 		}
 	}
+	int pile_num = pile_on_blank(p);
 
+//	blank += pile_num * 0.5;
 	return blank;
 }
+
 void main_scrine::calc_blank_sub(int i, int j, int p) {
 	fild[p][i][j] = 2;
 
@@ -970,4 +975,41 @@ void main_scrine::calc_blank_sub(int i, int j, int p) {
 		}
 
 	
+}
+
+int main_scrine::pile_on_blank(int p) {
+	int num = 0;
+	bool is_test_finish = false;
+	for (int i = 1; i < 19; i++) {
+		for (int j = 1; j < 11; j++) {
+			if (fild[p][i][j] == 123 || fild[p][i][j] == 124) {
+				num += pile_on_blank_sub(i, j, p);
+				is_test_finish = true;
+			}
+		}
+		if (is_test_finish) { break; }
+	}
+
+	return num;
+}
+
+int main_scrine::pile_on_blank_sub(int i, int j, int p) {
+	int num = 0;	//shadow 아래에 빈칸이 얼마나 있는지 셀 예정
+	int num_blank = 0;	//shadow로 막혀있는 빈 공간의 크기
+	while (i < 19) {
+		if (fild[p][i][j] == 123 || fild[p][i][j] == 124) {
+			num++;
+		}
+		else if (fild[p][i][j] == 0) {
+			num_blank++;
+		}
+		else if (i == 18) {
+			if (num_blank == 0) {
+				num = 0;
+			}
+			break;
+		}
+		i++;
+	}
+	return num;
 }

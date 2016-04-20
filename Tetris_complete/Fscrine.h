@@ -153,9 +153,12 @@ public:
 	int can_remove(int p = 1);											//지울 수 있나
 	int nearly_remove(int p = 1);										//거의 지우기에 근접해 있나
 	int calc_shadow_height(int p = 1);									//지금 쌓을 예정인 블록이 쌓일 높이
-	int calc_blank(int p = 1);											//빈칸의 갯수
+	int calc_blank(int p = 1);											//빈칸의 갯수, 그리고 빈칸위에 쌓인 블럭수도 반환
 	void calc_blank_sub(int x, int y, int p = 1);
+	int pile_on_blank(int p = 1);												//빈칸위에 쌓인 블럭의 수
+	int pile_on_blank_sub(int i, int j, int p = 1);
 	void AI_ON() { AI_on = true; }
+	
 
 };
 
