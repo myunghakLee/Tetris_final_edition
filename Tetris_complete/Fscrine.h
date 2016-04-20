@@ -6,6 +6,8 @@
 #include<fstream>
 #include<windows.h>
 
+
+
 class next_block
 {
 private:
@@ -84,6 +86,7 @@ private:
 	bool AI_on;
 
 
+
 public:
 	main_scrine(){
 		AI_on = false;
@@ -123,6 +126,8 @@ public:
 				fild[pp][19][i] = 10;
 			}
 		}
+
+
 	}
 	void print_start_scrine(char name[], char name2[]);				//바깥 테두리 score_scrine, name_scrine을 만듬	, player2 가 50일시 2번스크린 개방
 	void outside_border();							//바깥 테두리를 만듬
@@ -145,9 +150,17 @@ public:
 	int calc(int p = 1);												//AI가 어떻게 움직여야 하는지 계산하기 위한것을 정리, 관리하는 함수
 	int calc_height(int p = 1);											//높이 계산
 	int calc_surface(int p = 1);										//표면 계산
-	int can_remove(int p = 1);											//지울 수 있나	
+	int can_remove(int p = 1);											//지울 수 있나
+	int nearly_remove(int p = 1);										//거의 지우기에 근접해 있나
+	int calc_shadow_height(int p = 1);									//지금 쌓을 예정인 블록이 쌓일 높이
+	int calc_blank(int p = 1);											//빈칸의 갯수
+	void calc_blank_sub(int x, int y, int p = 1);
 	void AI_ON() { AI_on = true; }
+
 };
 
 
+
+
 #endif
+	

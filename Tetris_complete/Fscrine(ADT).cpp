@@ -277,7 +277,6 @@ void main_scrine::start_game(std::ifstream& instream)
 						is_break = true;
 						is_break2 = true;
 						player_complete_down[1] = true;
-						is_it_finish(1);
 					}
 					if (is_break2) {
 						break;
@@ -285,6 +284,8 @@ void main_scrine::start_game(std::ifstream& instream)
 
 				}
 			} while (!_kbhit());    // 키보드가 눌리지 않는 동안 
+
+
 			if (is_break) {
 				break;
 			}//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -656,9 +657,6 @@ void main_scrine::finish_scrine(block *blocks, int p)
 	}
 }
 
-
-
-
 void main_scrine::AI_move(block *blocks, int p)
 {
 	for (int i = 0; i < 4; i++)
@@ -728,7 +726,7 @@ void main_scrine::AI_move(block *blocks, int p)
 			}
 		}
 	}
-	mvprintw(23, 8, "%d %d %d", optimum_num, optimum_shape, optimum_move);
+	mvprintw(23, 8, "%d %d %d %d", optimum_num, optimum_shape, optimum_move, calc_surface(p));
 	refresh();
 
 	for (int i = 0; i < optimum_shape; i++) {		//저장된 모양으로 바꿈
@@ -780,35 +778,35 @@ void main_scrine::AI_move(block *blocks, int p)
 
 }
 
-
 int main_scrine::calc(int p)
 {
 	int num = 0;
 	int height = calc_height(p);
 	int H = height;					//높이 점수 계산을 위한 변수, 실제 높이와는 따로 잡아야함;
+	int shadow_height = calc_shadow_height(p);	//현재 쌓을게 어느정도 높이에 쌓일것인지
 	int remove_line_num = can_remove(p);		//몇줄 지울 수 있는지
 
-	for (int i = 8; i < 18; i++) {
+
+	for (int i = 10; i < 18; i++) {
 		if (height > i) { H++; }
-		if (height > 12) {
+		if (height > 14) {
 			H += 2;
+			shadow_height += 2;
 			if (remove_line_num > 0) { remove_line_num++; }
 		}
-		if (height > 14) { H += 3; remove_line_num *= 2; }
+		if (height > 14) { H += 3; remove_line_num *= 2; shadow_height += 3; }
 	}
 	if (height > 17) {
-		H = 10000; remove_line_num *= 10000000;
+		H *= 10000; remove_line_num *= 10000000; shadow_height *= 1000;
 	}
 
 
 	height = H;
-	num = calc_surface(p) + H * 2 - remove_line_num * 15;	//num이 낮으면 낮을수록 좋음
-	if (num < -50) {
-		num += 30;
-		num -= 30;
-	}
+	num = calc_surface(p) + H * 2 - remove_line_num * 15 + shadow_height - nearly_remove(p)*7 + calc_blank(p)*3;	//num이 낮으면 낮을수록 좋음
+
 	return num;
 }
+
 int main_scrine::calc_height(int p)
 {
 	int height = 19;
@@ -823,6 +821,7 @@ int main_scrine::calc_height(int p)
 	return height;
 
 }
+
 int main_scrine::calc_surface(int p)
 {
 	float surface = 0;
@@ -834,24 +833,34 @@ int main_scrine::calc_surface(int p)
 				if (fild[p][i + 1][j] != 0 && fild[p][i + 1][j] != 1 && fild[p][i + 1][j] != 10) { surface++; }
 				if (fild[p][i][j + 1] != 0 && fild[p][i][j + 1] != 1 && fild[p][i][j + 1] != 10) { surface++; }
 				if (fild[p][i][j - 1] != 0 && fild[p][i][j - 1] != 1 && fild[p][i][j - 1] != 10) { surface++; }
-				if (fild[p][i][j - 1] != 0 && fild[p][i][j + 1] != 0 && fild[p][i - 1][j] != 0 && fild[p][i + 1][j] != 0) { surface += 4; }
+				if (fild[p][i][j - 1] != 0 && fild[p][i][j + 1] != 0 && fild[p][i - 1][j] != 0 && fild[p][i + 1][j] != 0) { surface += 4; }	//빈칸하나
 				if (fild[p][i - 1][j] != 0 && fild[p][i + 1][j] != 0) { surface += 2; }
-				if (i > 1) {
-					if (fild[p][i - 2][j] != 0) { surface += 2; }
-				}
+				
+			
+				if (fild[p][i - 1][j] != 0 && fild[p][i][j - 1] != 0 && (fild[p][i + 1][j] != 0 || fild[p][i + 1][j] != 10)) {	//끼워넣기를 해야하는 상황
+					if (fild[p][i - 1][j] != 1 && fild[p][i][j - 1] != 1 && (fild[p][i + 1][j] != 1)) {	//끼워넣기를 해야하는 상황
 
+						surface += 3;
+					}
+				}
+				else if (fild[p][i - 1][j] != 0 && fild[p][i][j + 1] != 0 && (fild[p][i + 1][j] != 0 || fild[p][i + 1][j] != 10)) {	//끼워넣기를 해야하는 상황
+					if (fild[p][i - 1][j] != 1 && fild[p][i][j + 1] != 1 && (fild[p][i + 1][j] != 1 )) {	//끼워넣기를 해야하는 상황
+						surface += 3;
+					}
+				}
 			}
-			else if (fild[p][i][j] % 100 == 0 || fild[p][i][j] == 123 || fild[p][i][j] == 124) {					//벽과 닿아있는 경우
-				if (fild[p][i][j - 1] == 10 || fild[p][i][j + 1] == 10) { surface++; }
-			}
+			//else if (fild[p][i][j] % 100 == 0 || fild[p][i][j] == 123 || fild[p][i][j] == 124) {					//벽과 닿아있는 경우
+			//	if (fild[p][i][j - 1] == 10 || fild[p][i][j + 1] == 10) { surface++; }
+			//}
 		}
 	}
 
-	for (int i = 1; i <= 10; i++) {
-		if (fild[p][18][i] == 0) { surface++; }
-	}
+	//for (int i = 1; i <= 10; i++) {
+	//	if (fild[p][18][i] == 0) { surface++; }
+	//}
 	return surface;
 }
+
 int main_scrine::can_remove(int p)
 {
 	int del_line_num = 0;
@@ -872,4 +881,93 @@ int main_scrine::can_remove(int p)
 	}
 
 	return del_line_num;
+}
+
+int main_scrine::calc_shadow_height(int p) {
+	int shaodw_height = 19;
+	for (int i = 0; i <= 18; i++) {
+		for (int j = 1; j <= 10; j++) {
+			if (fild[p][i][j] == 123 || fild[p][i][j] == 124) {
+				return shaodw_height;
+			}
+		}
+		shaodw_height--;
+	}
+	return shaodw_height;
+
+}
+
+int main_scrine::nearly_remove(int p) {		//너무 적당히 짯나.....
+	int N_del_line_num = 0;
+
+	int del = 0;
+	for (int i = 1; i < 19; i++)
+	{
+		for (int j = 1; j < 11; j++)
+		{
+			if (100 <= fild[p][i][j] && fild[p][i][j] <= 900)
+				del++;
+		}
+		if (del > 7)		//한줄이 꽉찬경우
+		{
+			N_del_line_num++;
+		}
+		del = 0;
+	}
+
+	return N_del_line_num;
+
+}
+
+int main_scrine::calc_blank(int p) {
+	int blank = 0;		//테트리스의 총 칸수
+	for (int i = 0; i < 11; i++) {
+		if (fild[p][0][i] == 0) {
+			calc_blank_sub(0, i, p);
+			break;
+		}
+	}
+
+	for (int i = 1; i < 19; i++) {
+		for (int j = 1; j < 11; j++) {
+			if (fild[p][i][j] == 0) {
+				blank++;
+			}
+		}
+	}
+
+	for (int i = 0; i < 19; i++) {
+		for (int j = 1; j < 11; j++) {
+			if (fild[p][i][j] == 2) {
+				fild[p][i][j] = 0;
+			}
+		}
+	}
+
+	return blank;
+}
+void main_scrine::calc_blank_sub(int i, int j, int p) {
+	fild[p][i][j] = 2;
+
+	if (i > 0) {
+		if (fild[p][i - 1][j] == 0) {
+			calc_blank_sub(i - 1, j, p);
+		}
+	}
+	if (j > 0) {
+		if (fild[p][i][j - 1] == 0) {
+			calc_blank_sub(i, j - 1, p);
+		}
+	}
+
+	if (i < 19)
+		if (fild[p][i + 1][j] == 0) {
+			calc_blank_sub(i + 1, j, p);
+		}
+	if (j < 11)
+		if (fild[p][i][j + 1] == 0) {
+			calc_blank_sub(i, j + 1, p);
+		}
+
+	
 }
