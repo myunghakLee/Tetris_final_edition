@@ -84,9 +84,9 @@ private:
 	block *blocks[2];
 	int choose;								//1p인지 2p인지 선택하기 위한 변수
 	bool AI_on;
-
-
-
+	int blank_num;							//한번더 blank를 계산 하는건 비효율적으로 생각되어 사용
+	int before_blank_num;					//이전의 블랭크 수와 현재 blank 수를 계산하여 지금 놓는 블록으로 인하여 생긴 blank를 계산
+	int before_nearly_remove_line_num;
 public:
 	main_scrine(){
 		AI_on = false;
@@ -97,7 +97,8 @@ public:
 		name_scrine[1] = new user_name_scrine(50);
 		next_block_scrine[1] = new next_block(50);
 
-
+		before_nearly_remove_line_num = 0;
+		before_blank_num = 0;
 		score[0] = 0;
 		score[1] = 0;
 		player_complete_down[0] = true;
@@ -153,12 +154,13 @@ public:
 	int can_remove(int p = 1);											//지울 수 있나
 	int nearly_remove(int p = 1);										//거의 지우기에 근접해 있나
 	int calc_shadow_height(int p = 1);									//지금 쌓을 예정인 블록이 쌓일 높이
-	int calc_blank(int p = 1);											//빈칸의 갯수, 그리고 빈칸위에 쌓인 블럭수도 반환
-	void calc_blank_sub(int x, int y, int p = 1);
-	int pile_on_blank(int p = 1);												//빈칸위에 쌓인 블럭의 수
-	int pile_on_blank_sub(int i, int j, int p = 1);
+	int calc_blank(int p = 1, int can_remove = 0);											//빈칸의 갯수, 그리고 빈칸위에 쌓인 블럭수도 반환
+	void calc_blank_sub(int x, int y, int p = 1, int can_remove = 0);
+	int pile_on_blank(int p = 1, int can_remove = 0);												//빈칸위에 쌓인 블럭의 수
+	int pile_on_blank_sub(int i, int j, int p = 1, int can_remove = 0);
 	void AI_ON() { AI_on = true; }
-	
+	int unfavorable_shape(int p);
+	bool move_side_shadow(block * blocks, int p, int a);											//shadow를 움직일수 있으면 true 아니면 false
 
 };
 
