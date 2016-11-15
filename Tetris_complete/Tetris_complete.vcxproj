@@ -82,7 +82,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
-    <ClCompile Include="Fscrine(ADT).cpp" />
+    <Text Include="experiment.txt">
+      <FileType>CppCode</FileType>
+    </Text>
+    <ClCompile Include="Fscrine.cpp" />
     <ClCompile Include="tetris.cpp" />
   </ItemGroup>
   <ItemGroup>
