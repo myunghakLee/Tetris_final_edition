@@ -82,9 +82,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
-    <Text Include="experiment.txt">
-      <FileType>CppCode</FileType>
-    </Text>
     <ClCompile Include="Fscrine.cpp" />
     <ClCompile Include="tetris.cpp" />
   </ItemGroup>
@@ -94,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="direction.txt" />
+    <Text Include="expermient.txt" />
     <Text Include="input.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

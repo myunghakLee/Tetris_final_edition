@@ -40,7 +40,7 @@
     <Text Include="direction.txt">
       <Filter>소스 파일</Filter>
     </Text>
-    <Text Include="experiment.txt">
+    <Text Include="expermient.txt">
       <Filter>소스 파일</Filter>
     </Text>
   </ItemGroup>
