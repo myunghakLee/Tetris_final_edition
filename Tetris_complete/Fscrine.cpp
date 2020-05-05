@@ -497,7 +497,7 @@ void main_scrine::input_block_fild(block *blocks, int a, int p)	//block을 필드에
 
 }
 
-bool const main_scrine::move_down(block *blocks, int p)
+bool const main_scrine::move_down(block *blocks, int p, bool is_print)
 {
 	in_it_fild(p);
 	if (shadow_on[p]) { input_shadow_fild(blocks, 1, p); }
@@ -520,7 +520,9 @@ bool const main_scrine::move_down(block *blocks, int p)
 			}
 			return true;
 		}
-		reprint_scrine();
+		if (is_print) {
+			reprint_scrine();
+		}
 		return false;
 	}
 	else//블록이 맨 밑까지 내려간 경우
@@ -538,13 +540,15 @@ bool const main_scrine::move_down(block *blocks, int p)
 					fild[p][i][j] = 100 * color[p];
 				}///////////////////////////////////////////////////////////////////////////////////////
 		}
-		reprint_scrine();
+		if (is_print) {
+			reprint_scrine();
+		}
 		return true;
 	}
 	return false;
 }
 
-void main_scrine::move_side(block *blocks, int a, int p)
+void main_scrine::move_side(block *blocks, int a, int p, bool is_print)
 {
 	in_it_fild(p);
 
@@ -555,7 +559,9 @@ void main_scrine::move_side(block *blocks, int a, int p)
 		right[p] += a;							//오른쪽으로 한칸 이동
 		input_block_fild(blocks, 1, p);		//블록을 다시 그림
 	}
-	reprint_scrine();
+	if (is_print) {
+		reprint_scrine();
+	}
 }
 
 void main_scrine::delete_line(block *blocks, int p)
@@ -598,7 +604,7 @@ bool main_scrine::is_it_finish(int p) const		//게임이 끝날조건2(맨 첫줄에 블록이
 	return false;
 }
 
-void main_scrine::make_shadow(block *blocks, int p)
+void main_scrine::make_shadow(block *blocks, int p, bool is_print)
 {
 	top_shadow[p] = top[p];
 
@@ -619,7 +625,8 @@ void main_scrine::make_shadow(block *blocks, int p)
 			break;
 		}
 	}
-	reprint_scrine();
+	if(is_print)
+		reprint_scrine();
 
 }
 
@@ -677,18 +684,18 @@ void main_scrine::AI_move(block *blocks, int p)
 
 		for (int i = 0; i < 11; i++) {				//일단 오른쪽 끝으로 옮김
 			right[p]++;
-			move_side(blocks, -1, p);
+			move_side(blocks, -1, p, false);
 		}
-		make_shadow(blocks, p);
+		make_shadow(blocks, p, false);	//reprint
 		temp_right = right[p];
 
 		calc_num[sh][0][2] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
 
 		temp_top_shadow = top_shadow[p];
 
-		if (move_side_shadow(blocks, p, -1)) {
+		if (move_side_shadow(blocks, p, -1, false)) {
 			calc_num[sh][0][1] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
-			if (move_side_shadow(blocks, p, -1)) {
+			if (move_side_shadow(blocks, p, -1, false)) {
 				calc_num[sh][0][0] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
 				input_shadow_fild(blocks, -1, p);
 				right[p] += 1;
@@ -704,9 +711,9 @@ void main_scrine::AI_move(block *blocks, int p)
 		top_shadow[p] = temp_top_shadow;
 		input_shadow_fild(blocks, 1, p);
 
-		if (move_side_shadow(blocks, p, 1)) {
+		if (move_side_shadow(blocks, p, 1, false)) {
 			calc_num[sh][0][3] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
-			if (move_side_shadow(blocks, p, 1)) {
+			if (move_side_shadow(blocks, p, 1, false)) {
 				calc_num[sh][0][4] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
 				input_shadow_fild(blocks, -1, p);
 				right[p] -= 1;
@@ -731,16 +738,16 @@ void main_scrine::AI_move(block *blocks, int p)
 		for (int i = 1; i < 10; i++) {
 			//////////////////////////////왼쪽이동/////////////////////////////////
 			right[p]--;
-			move_side(blocks, 1, p);		//블록을 옆으로 옮김
-			make_shadow(blocks, p);		//계산을 위해 shadow를 만듬
+			move_side(blocks, 1, p, false);		//블록을 옆으로 옮김
+			make_shadow(blocks, p, false);		//계산을 위해 shadow를 만듬
 			////////////////////////////////////////////////////////////////////////이 부분에 is_it_ok넣기
 			calc_num[sh][i][2] = calc(p);
 			temp_right = right[p];
 			temp_top_shadow = top_shadow[p];
 
-			if (move_side_shadow(blocks, p, -1)) {
+			if (move_side_shadow(blocks, p, -1, false)) {
 				calc_num[sh][i][1] = calc(p);				
-				if (move_side_shadow(blocks, p, -1)) {
+				if (move_side_shadow(blocks, p, -1, false)) {
 					calc_num[sh][i][0] = calc(p);				
 					input_shadow_fild(blocks, -1, p);
 					right[p] += 1;
@@ -755,10 +762,10 @@ void main_scrine::AI_move(block *blocks, int p)
 			top_shadow[p] = temp_top_shadow;
 			input_shadow_fild(blocks, 1, p);
 			
-			reprint_scrine();
-			if (move_side_shadow(blocks, p, 1)) {
+			//reprint_scrine();
+			if (move_side_shadow(blocks, p, 1, false)) {
 				calc_num[sh][i][3] = calc(p);		 		//맨 오른쪽에 있는 경우  ca = 0
-				if (move_side_shadow(blocks, p, 1)) {
+				if (move_side_shadow(blocks, p, 1, false)) {
 					calc_num[sh][i][4] = calc(p);				//맨 오른쪽에 있는 경우  ca = 0
 					input_shadow_fild(blocks, -1, p);
 					right[p] -= 1;
@@ -785,7 +792,7 @@ void main_scrine::AI_move(block *blocks, int p)
 			in_it_fild(p);
 			input_block_fild(blocks, 1, p);
 			if (is_it_ok()) {
-				reprint_scrine();
+				//reprint_scrine();
 				break;
 			}
 			else
@@ -796,8 +803,8 @@ void main_scrine::AI_move(block *blocks, int p)
 				input_block_fild(blocks, 1, p);
 
 				right[p]++;
-				move_side(blocks, -1, p);
-				make_shadow(blocks, p);
+				move_side(blocks, -1, p, false);
+				make_shadow(blocks, p, false);
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////
@@ -842,11 +849,11 @@ void main_scrine::AI_move(block *blocks, int p)
 			i--;
 			//cancel++;
 			right[p]--;
-			move_side(blocks, 1, p);
-			make_shadow(blocks, p);
+			move_side(blocks, 1, p, false);
+			make_shadow(blocks, p, false);
 
 		}
-		reprint_scrine();
+		//reprint_scrine();
 
 	}
 	//for (int i = 0; i < cancel; i++) {
@@ -857,18 +864,18 @@ void main_scrine::AI_move(block *blocks, int p)
 
 	for (int i = 0; i < 11; i++) {				//일단 오른쪽 끝으로 옮김
 		right[p]++;
-		move_side(blocks, -1, p);
+		move_side(blocks, -1, p, false);
 	}
-
+	
 	for (int i = 0; i < optimum_move; i++) {			//저장된 값만큼 움직임
 		right[p]--;
-		move_side(blocks, 1, p);
+		move_side(blocks, 1, p, false);
 	}
 
-	make_shadow(blocks, p);
+	make_shadow(blocks, p, false);
 	while (1)		//맨 밑으로 내림
 	{
-		if (move_down(blocks, p))
+		if (move_down(blocks, p, false))
 		{
 			player_complete_down[p] = true;
 			break;
@@ -877,20 +884,20 @@ void main_scrine::AI_move(block *blocks, int p)
 	//top[p]--;
 
 	//////////////////////////////////////////////////////////그림자로 바꾸기 위한 과정////////////////////////////////////////////////////
-	reprint_scrine();//
+	//reprint_scrine();//
 	input_block_fild(blocks, -1 * 100 * color[p], p);
 	input_block_fild(blocks, 1, p);
-	reprint_scrine();//
+	//reprint_scrine();//
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	reprint_scrine();//
+	//reprint_scrine();//
 	for (int i = 2; i < optimum_last_move; i++) {			//저장된 값만큼 움직임
-		reprint_scrine();
+	//	reprint_scrine();
 
 		input_block_fild(blocks, -1, p);
 		right[p]++;
 		input_block_fild(blocks, 1, p);
 
-		reprint_scrine();//
+	//	reprint_scrine();//
 	}
 	
 	for (int i = 2; i > optimum_last_move; i--) {			//저장된 값만큼 움직임
@@ -899,14 +906,14 @@ void main_scrine::AI_move(block *blocks, int p)
 		right[p]--;
 		input_block_fild(blocks, 1, p);
 		while (1) {
-			if (move_down(blocks, p))
+			if (move_down(blocks, p, false))
 			{
 				input_block_fild(blocks, -1 * 100 * color[p], p);
 				input_block_fild(blocks, 1, p);
 				break;
 			}
 		}
-		reprint_scrine();//
+	//	reprint_scrine();//
 	}
 	//top[p]++;
 	while (1)		//다시 맨 밑으로 내림
@@ -918,12 +925,12 @@ void main_scrine::AI_move(block *blocks, int p)
 		}
 	}
 
-	reprint_scrine();
+	//reprint_scrine();
 
 
 	in_it_fild(p);
 
-	reprint_scrine();
+	//reprint_scrine();
 	before_blank_num = calc_blank(p, 0);
 	before_nearly_remove_line_num = nearly_remove(p);
 }
@@ -1366,17 +1373,18 @@ int main_scrine::unfavorable_shape(int p) {
 
 }
 
-bool main_scrine::move_side_shadow(block * blocks, int p, int a) {
+bool main_scrine::move_side_shadow(block * blocks, int p, int a, bool is_print) {
 
 	input_shadow_fild(blocks, -1, p);
 	right[p] += a;
 	input_shadow_fild(blocks, 1, p);
-	reprint_scrine();		//나중에 컴파일 끝나면 지우기
+
+//	reprint_scrine();		//나중에 컴파일 끝나면 지우기
 	if (!is_it_ok()) {
 		input_shadow_fild(blocks, -1, p);
 		right[p] -= a;
 		input_shadow_fild(blocks, 1, p);
-		reprint_scrine();
+		//reprint_scrine();
 		return false;
 	}
 
@@ -1393,8 +1401,8 @@ bool main_scrine::move_side_shadow(block * blocks, int p, int a) {
 			break;
 		}
 	}
-
-	reprint_scrine();
+	if (is_print)
+		reprint_scrine();
 
 	return true;
 }

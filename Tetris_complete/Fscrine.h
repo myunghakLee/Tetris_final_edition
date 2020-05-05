@@ -134,14 +134,14 @@ public:
 	void outside_border();							//바깥 테두리를 만듬
 	void start_game(std::ifstream& instream);				//테트리스 게임의 중심함수, 블록을 조작하고 없에는것이 대부분 들어있음
 	bool const reprint_scrine() const;			//게임화면을 새로고침함 즉 데이터상으로는 움직였지만 화면에 나오지 않은 것을 나오게함
-	bool const move_down(block *blocks, int p);					//아래로 한칸 이동하는 함수
-	void move_side(block *blocks, int a, int p);					//옆으로 움직이는 함수 a가 1이냐 -1이냐 에따라 왼쪽 오른쪽이 갈림
+	bool const move_down(block *blocks, int p, bool is_print = true);					//아래로 한칸 이동하는 함수
+	void move_side(block *blocks, int a, int p, bool is_print = true);					//옆으로 움직이는 함수 a가 1이냐 -1이냐 에따라 왼쪽 오른쪽이 갈림
 	void in_it_fild(int p);										//fild 초기화 fild값이 1인부분(현재 내려가고 있는 블록)을 찾아 0으로 바꿈
 	bool is_it_ok() const;									//블록이 그쪽으로 움직일수 있나 판단
 	void input_block_fild(block *blocks, int a, int p);			//block값을 fild라는 2차원 배열에 저장
 	void delete_line(block *blocks, int p);						//한줄을 지워도 되는 상환한지 판단 후 지워도 된다면 지움
 	bool is_it_finish(int p) const;								//gameover 가 되었는지			조건2(블록이 맨 첫줄에 쌓여 있는지, 단 이번 프로젝트에서는 사용하지 않음)
-	void make_shadow(block *blocks, int p);
+	void make_shadow(block *blocks, int p, bool is_print = true);
 	void input_shadow_fild(block *blocks, int a, int p);			//shadow를 집어넣음
 	void draw();												//게임화면 그림
 	void set_choose(int a) { choose = a; }										//choose를 변경하기 위한 함수
@@ -160,7 +160,7 @@ public:
 	int pile_on_blank_sub(int i, int j, int p = 1, int can_remove = 0);
 	void AI_ON() { AI_on = true; }
 	int unfavorable_shape(int p);
-	bool move_side_shadow(block * blocks, int p, int a);											//shadow를 움직일수 있으면 true 아니면 false
+	bool move_side_shadow(block * blocks, int p, int a, bool is_print = true);											//shadow를 움직일수 있으면 true 아니면 false
 
 };
 

@@ -31,8 +31,8 @@ int main()
 	int a;
 	char choose[100] = {0}; //1인용을 할 것인지 2인용을 할 것인지 선택하게한다. 사용자가 다른 값을 입력할 때를 대비하여 문자형 배열로 만듬
 	instream >> a;
-	srand(a);
-
+	srand(900);
+	// 4 : 400줄
 	if (a < 0)
 	{
 		while (choose[0] != 1 || choose[0] != 2)						//choose 에 이상한 값을 집어넣었을 경우, 혹은 아직 choose에 값을 집어넣기 전
@@ -57,7 +57,7 @@ int main()
 		else if(choose[0] == '3'){
 			strcpy_s(name2, 9, "computer");
 		}
-		srand(time(NULL));
+		srand(20);
 	}
 
 	make_terminal(choose[0]-'0');		//choose값을 cho에 대입 문자형은 0을 나타낼때 아스키코드값의 차이가 있으므로 -0을 해줌
